@@ -2,7 +2,7 @@ import express from "express";
 import { createCourse, deleteCourse, getCourses, updateCourse } from "../controllers/course.controllers.js";
 import upload from "../middlewares/multer.middleware.js"
 import authenticateUser from "../middlewares/instructor.middleware.js";
-import authenticateAdmin from "../middlewares/admin.Middleware.js";
+import authenticateAdmin from "../middlewares/admin.middleware.js";
 
 const router = express.Router();
 
