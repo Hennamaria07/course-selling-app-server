@@ -1,92 +1,101 @@
-const bcrypt = require("bcryptjs");
-const User = require("../models/user.model");
-const generateToken = require("../utils/generateToken")
+import bcrypt from "bcryptjs";
+import User from "../models/user.model.js";
+import { generateToken } from "../utils/generateToken.js";
 
-const signUp = async (req, res) => {
-    const { username, password, email, firstName, lastName } = req.body
-    console.log(email)
+const signup = async (req, res) => {
     try {
-        if([username, password, email, firstName, lastName].some((field) => !field)) {
+        const { email, password, firstName, lastName } = await req.body;
+        if ([email, password, firstName, lastName].some((field) => !field)) {
             return res.status(400).json({
                 success: false,
-                message: "All fields are required"
+                error: "All fields are required"
             })
         }
-        const userExist = await User.findOne({email});
-        if(userExist){
+
+        const userExist = await User.findOne({ email });
+
+        if (userExist) {
             return res.status(409).json({
                 success: false,
-                message: "User already exist"
+                error: "User already exist"
             })
         }
+
         const hashPassword = await bcrypt.hash(password, 10);
-        const newUser = await User.create({
+
+        const user = new User({
+            email,
             firstName,
             lastName,
-            email,
-            hashPassword,
-            username
-        })
-        const token = generateToken(email)
-        return res.status(201).json({
-            success: true,
-            message: "User registered successfully",
-            token
-        })
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        })
-    }
-}
+            password: hashPassword,
+        });
 
-const login = async (req, res) => {
-    try {
-        const {email, password} = req.body;
-        // console.log(email, password)
-        if([email, password].some((field) => !field || field?.trim() === "")) {
-            return res.status(400).json({
+        const userCreated = await user.save();
+
+        if (!userCreated) {
+            return res.status(500).json({
                 success: false,
-                message: 'All fields are required'
-            });
-        };
-        const user = await User.findOne({email})
-        // console.log(user);
-        if(!user) {
+                error: "user is not created"
+            })
+        }
+
+        const token = await generateToken(email);
+        res.status(201)
+            .cookie("token", token, { httpOnly: true, secure: true })
+            .json({
+                success: true,
+                message: "Signed successfully!",
+                data: userCreated
+            })
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                error: error.message
+            }
+        )
+    }
+};
+
+
+const signin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
             return res.status(404).json({
                 success: false,
-                message: "User not found"
-            });
-        };
-        const passwordCorrect = bcrypt.compare(password, user.hashPassword)
-        if(!passwordCorrect) {
-            return res.status(401).json({
-                success: false,
-                message: "Invalid credential"
-            });
+                error: "user not found"
+            })
         }
-        const loggedUser = await User.findById(user._id).select('-hashPassword')
-        // const accessToken = await generateToken(loggedUser._id);
-        // console.log(accessToken);
-        const token = generateToken(email);
-        return res.status(200)
-        .json({
-            success: true,
-            message: "Loggedin successfully",
-            user: loggedUser,
-            isAuthenticated: true,
-            token
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-}
 
-module.exports = {
-    signUp,
-    login
-}
+        const matchPassword = await bcrypt.compare(password, user.password);
+
+        if (!matchPassword) {
+            return res.status(400).json({
+                success: false,
+                error: "Invalid credentials"
+            })
+        }
+
+        const token = generateToken(email);
+        res.status(200)
+            .cookie("token", token, { httpOnly: true, secure: true })
+            .json({
+                success: true,
+                message: "Logged in successfully!",
+                data: user
+            })
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                error: error.message
+            }
+        )
+    }
+};
+
+export {signin, signup}

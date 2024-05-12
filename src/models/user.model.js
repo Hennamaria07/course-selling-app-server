@@ -1,43 +1,45 @@
-const mongoose = require("mongoose");
+import mongoose, {Schema} from "mongoose";
 
-const userSchema = new mongoose.Schema(
+
+const userSchema = new Schema(
     {
-        username: {
-            type: String,
-            required: true,
-            unique: true,
-            minLength: 3,
-            maxLength: 30,
-        },
-        hashPassword: {
-            type: String,
-            required: true,
-            minLength: 6,
-        },
         firstName: {
             type: String,
             required: true,
-            maxLength: 50,
+            trim: true,
+            min: [3, "First name should contain atleast 3 characters"],
+            max: [10, "First name should not be excceed more than 10 characters"]
         },
         lastName: {
             type: String,
             required: true,
-            maxLength: 50,
+            trim: true,
+            min: [3, "Last name should contain atleast 3 characters"],
+            max: [10, "Last name should not be excceed more than 10 characters"]
         },
         email: {
             type: String,
             required: true,
             unique: true,
+            lowerCase: true,
+            trim: true
+        },
+        password: {
+            type: String,
+            required: true
         },
         courses: [
-            { 
-                type: mongoose.Types.ObjectId,
-                ref: "Course" 
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Course"
             }
-        ],
+        ]
     },
-    { timestamps: true }
-);
+    {
+        timestamps: true
+    }
+)
 
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+const User = mongoose.model("User", userSchema)
+
+export default User;
