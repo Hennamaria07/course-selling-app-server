@@ -6,7 +6,7 @@ const authenticateUser = async (req, res, next) => {
   if(!token) {
     return res.status(401).json({
         success: false,
-        error:"Unauthenicated request",
+        error:"Unauthenicated Instructor request",
         isAuthenticated: false
     });
 };

@@ -7,7 +7,7 @@ import authenticateAdmin from "../middlewares/admin.middleware.js";
 const router = express.Router();
 
 router.route('/get-courses').get(getCourses);
-router.route('/').post((authenticateUser || authenticateAdmin), upload.single('image'), createCourse);
+router.route('/').post(authenticateUser , upload.single('image'), createCourse);
 router.route('/update-course/:id').patch((authenticateUser || authenticateAdmin), updateCourse);
 router.route('/:id').delete((authenticateUser || authenticateAdmin), deleteCourse);
 
