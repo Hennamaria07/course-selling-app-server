@@ -42,7 +42,7 @@ export const createCourse = async (req, res) => {
                 }
             );
         }
-        cloudinaryInstance.uploader.upload(req.file.path, async (err, result) => {
+        cloudinaryInstance.uploader.upload(req.file.path, {public_id: instructorEmail}, async (err, result) => {
             if (err) {
                 return res.status(500).json({
                     success: false,
@@ -57,7 +57,10 @@ export const createCourse = async (req, res) => {
                 description,
                 price,
                 instructor: findInstructor._id,
-                image: imageUrl,
+                image: {
+                    publicId: result.public_id,
+                    url: result.url
+                },
             });
 
 

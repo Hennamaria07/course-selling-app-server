@@ -19,7 +19,8 @@ const courseSchema = new mongoose.Schema(
       required: true,
     },
     image: {
-      type: String,
+      publicId: String,
+      url: String
     },
     instructor: [{ type: mongoose.Types.ObjectId, ref: "Instructor" }],
   },
