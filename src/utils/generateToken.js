@@ -5,6 +5,7 @@ export const generateToken = async (email) => {
 };
 
 export const adminToken = (user) => {
+  console.log('admin token', user)
   return jwt.sign({ data: user.id, role: user.role }, process.env.ACCESS_TOKEN_SECRET_KEY, {
     expiresIn: "1d",
   });

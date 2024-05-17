@@ -59,7 +59,6 @@ export const signup = async (req, res) => {
 export const signin = async (req, res) => {
     try {
         const { email, password } = req.body;
-
         const instructor = await Instructor.findOne({ email });
 
         if (!instructor) {
@@ -77,14 +76,15 @@ export const signin = async (req, res) => {
                 error: "Invalid credentials"
             })
         }
-
-        const token = adminToken(instructor);
+        // console.log('instructor', instructor)
+        const token = await adminToken(instructor);
         res.status(200)
             .cookie("token", token, { httpOnly: true, secure: true })
             .json({
                 success: true,
                 message: "Logged in successfully!",
-                data: instructor
+                data: instructor,
+                token
             })
     } catch (error) {
         res.status(500).json(
