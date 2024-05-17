@@ -7,7 +7,7 @@ import instructorRoute from "./routes/instructor.routers.js"
 
 const app = new express();
 
-app.use(cors({origin: true, credentials: true}));
+app.use(cors({origin: ["http://localhost:4000", "https://course-selling-app-server.onrender.com"], credentials: true}));
 app.use(express.json({limit: "16kb"}));
 app.use(express.urlencoded({limit: "16kb", extended: true}));
 app.use(cookieParser());

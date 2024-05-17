@@ -4,7 +4,7 @@ import Instructor from "../models/instructor.model.js";
 
 export const createCourse = async (req, res) => {
     try {
-        // console.log(req.file)
+        console.log(req.file)
         if (!req.file) {
             return res.status(400).json(
                 {
@@ -76,7 +76,8 @@ export const createCourse = async (req, res) => {
             return res.status(201).json(
                 {
                     success: true,
-                    data: newCourseCreated
+                    data: newCourseCreated,
+                    message: "course added successfully"
                 }
             );
         });
