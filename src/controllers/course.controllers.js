@@ -170,7 +170,7 @@ export const updateCourse = async (req, res) => {
 export const deleteCourse = async (req, res) => {
    try {
      const id = req.params.id;
-     const course = await Course.findById({id});
+     const course = await Course.findById(id);
     if(!course) {
         return res.status(400).json(
             {
